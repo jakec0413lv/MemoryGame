@@ -2,15 +2,16 @@
 #include <vector>
 #include <stdlib.h>     
 #include <time.h>
+#include <string>
 
 using namespace std;
 
 class game {
 private:
-    char ** cardBacks;
-    char ** cardValues;
+    string ** cardBacks;
+    string ** cardValues;
     
-    vector<char> values;
+    vector<string> values;
 
     int rows;
     int cols;
@@ -21,7 +22,8 @@ private:
     int moveCount = 0;
 
 public:
-    game(vector<char>);
+    game();
+    ~game();
     void showGame();
     void showValues();
 
@@ -40,32 +42,74 @@ public:
     bool checkForInvalidMove(int, int);
 };
 
-game::game(vector<char> passedValues){
-    rows = 2;
-    cols = 4;
+game::game(){
 
-    matchedCards = 0;
-    necessaryMatches = 8;
+    int difficulty;
 
-    values = passedValues;
+    vector<string> easyValues = {"1", "1", "2", "2", "3", "3", "4", "4"};
+    vector<string> mediumValues = {"1", "1", "2", "2", "3", "3", "4", "4", "5", "5", "6","6", "7", "7", "8", "8"};
+    vector<string> hardValues = {"1", "1", "2", "2", "3", "3", "4", "4", "5", "5", "6","6", "7", "7", "8", "8", 
+                                 "9", "9", "10", "10", "11", "11", "12", "12", "13", "13", "14","14", "15", "15", "16", "16"};
 
-    cardBacks = new char * [rows];
+    cout << "Choose a difficulty [1 - [8 cards], 2- [16 cards], 3 [32 Cards]]" << '\n';
+        cin >> difficulty;
+    
+    while(!cin || (difficulty != 1 && difficulty != 2 && difficulty != 3)){
+        cin.clear();
+        cin.ignore(40, '\n');
+        cout << "Choose a difficulty [1 - [8 cards], 2- [16 cards], 3 [32 Cards]]" << '\n';
+        cin >> difficulty;
+    }
+
+    if(difficulty == 1){
+        rows = 2;
+        cols = 4;
+        matchedCards = 0;
+        necessaryMatches = 8;
+        values = easyValues;
+    }
+
+    if(difficulty == 2){
+        rows = 4;
+        cols = 4;
+        matchedCards = 0;
+        necessaryMatches = 16;
+        values = mediumValues;
+    }
+
+    if(difficulty == 3){
+        rows = 4;
+        cols = 8;
+        matchedCards = 0;
+        necessaryMatches = 32;
+        values = hardValues;
+    }
+
+    cardBacks = new string * [rows];
 
     for(int i = 0; i < rows; i++){
-        cardBacks[i] = new char [cols];
+        cardBacks[i] = new string [cols];
     }
 
     for(int i = 0; i < rows; i++){
         for(int j = 0; j < cols; j++){
-            cardBacks[i][j] = 'X';
+            cardBacks[i][j] = "X";
         }
     }
 
-    cardValues = new char * [rows];
+    cardValues = new string * [rows];
 
     for(int i = 0; i < rows; i++){
-        cardValues[i] = new char [cols];
+        cardValues[i] = new string [cols];
     }
+}
+game::~game(){
+    for(int i = 0; i < rows; i++){
+        delete [] cardValues[i];
+        delete [] cardBacks[i];
+    }
+    delete [] cardValues;
+    delete [] cardBacks;
 }
 
 int game::getMatchedCards(){
@@ -81,7 +125,14 @@ int game::getMoveCount(){
 }
 
 void game::showGame(){
+    cout << "  ";
+    for(int i = 0; i < cols; i++){
+        cout << i << ' ';
+    }
+    cout << '\n';
+    cout << "--------------------" << '\n';
     for(int i = 0; i < rows; i++){
+        cout << i << "|";
         for(int j = 0; j < cols; j++){
             cout << cardBacks[i][j] << " ";
         }
@@ -98,7 +149,7 @@ void game::showValues(){
 
 void game::generateRandomBoard(){
 
-    vector<char> scrambledValues;
+    vector<string> scrambledValues;
     int randomIndex;
 
     int count = 0;
@@ -146,7 +197,7 @@ bool game::checkValidColumn(int c){
 }
 
 bool game::checkForInvalidMove(int i, int j){
-    if(cardBacks[i][j] != 'X'){
+    if(cardBacks[i][j] != "X"){
         return true;
     }else{
         return false;
@@ -166,8 +217,8 @@ void game::checkMatch(int i1 ,int j1, int i2, int j2){
         cardBacks[i1][j1] = cardValues[i1][j1];
         cardBacks[i2][j2] = cardValues[i2][j2];
         showGame();
-        cardBacks[i1][j1] = 'X';
-        cardBacks[i2][j2] = 'X';
+        cardBacks[i1][j1] = "X";
+        cardBacks[i2][j2] = "X";
         moveCount++;
     }
 }
