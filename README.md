@@ -18,9 +18,3 @@ g++ main.cpp -o game
 
 
 # Project Status
-
-In progress:
-
-+ Slight Refactor Code
-+ Comment functions
-+ Add move limit (?)
